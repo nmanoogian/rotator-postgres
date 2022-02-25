@@ -29,6 +29,7 @@ exports.handleUpdate = async function (body) {
     database: params.database,
     user: params.primaryUser.user,
     password: params.primaryUser.password,
+    connectionTimeoutMillis: 3000,
   });
 
   try {
@@ -65,6 +66,7 @@ exports.handleTest = async function (body) {
     database: params.database,
     user: params.user,
     password: params.password,
+    connectionTimeoutMillis: 3000,
   });
 
   try {
