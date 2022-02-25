@@ -2,7 +2,12 @@ const { Client } = require("pg");
 const { z } = require("zod");
 const pgFormat = require("pg-format");
 
-class RotationError extends Error {}
+class RotationError extends Error {
+  constructor(message, originalError = null) {
+    super(message);
+    this.originalError = originalError;
+  }
+}
 exports.RotationError = RotationError;
 
 exports.handleUpdate = async function (body) {
@@ -35,7 +40,7 @@ exports.handleUpdate = async function (body) {
   try {
     await client.connect();
   } catch (error) {
-    throw new RotationError("Connection failed");
+    throw new RotationError("Connection failed", error);
   }
 
   // pgsql can't parameterize utility queries, unfortunately
@@ -44,7 +49,7 @@ exports.handleUpdate = async function (body) {
   try {
     await client.query(query);
   } catch (error) {
-    throw new RotationError("ALTER USER failed");
+    throw new RotationError("ALTER USER failed", error);
   }
 };
 
@@ -72,12 +77,12 @@ exports.handleTest = async function (body) {
   try {
     await client.connect();
   } catch (error) {
-    throw new RotationError("Connection failed");
+    throw new RotationError("Connection failed", error);
   }
 
   try {
     await client.query("SELECT NOW() as now");
   } catch (error) {
-    throw new RotationError("test SELECT failed");
+    throw new RotationError("test SELECT failed", error);
   }
 };
